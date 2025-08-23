@@ -1,0 +1,34 @@
+package com.example.SecureJwTeaTime.domain.accountactivation;
+
+import com.example.SecureJwTeaTime.domain.user.base.User;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "account_activation")
+@Getter
+@NoArgsConstructor
+public class AccountActivation {
+    @Builder
+    public AccountActivation(UUID activationCode, LocalDateTime createdOn, User user) {
+        this.activationCode = activationCode;
+        this.createdOn = createdOn;
+        this.user = user;
+    }
+
+    @Id @GeneratedValue private Long id;
+
+  @Column(name = "activation_code", nullable = false)
+  private UUID activationCode;
+
+  @Column(name = "created_on", nullable = false)
+  private LocalDateTime createdOn;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
+}
