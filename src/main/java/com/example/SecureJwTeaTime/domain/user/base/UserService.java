@@ -77,10 +77,7 @@ public class UserService implements UserDetailsService {
 
   public GetUserWithJwtToken refreshToken(
       HttpServletRequest request, HttpServletResponse response) {
-    // get from user from database
     User user = getAuthenticatedUser();
-
-    // get te refresh token from cookie
     String providedToken = refreshTokenService.extractTokenFromCookie(request);
 
     RefreshToken refreshToken =
@@ -88,16 +85,13 @@ public class UserService implements UserDetailsService {
             .getRefreshToken(providedToken)
             .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token not found"));
 
-    // if no match throw exception
     if (!refreshToken.getUser().isSameUSer(user)) {
       throw new InvalidRefreshTokenException("Refresh token does not match the user");
     }
 
-    // if match generat new access token
     refreshTokenService.updateRefreshToken(response, refreshToken);
-
-    // return new accesstoken
     String accessToken = jwtService.generateAccessToken(user);
+
     return GetUserWithJwtToken.to(user, accessToken);
   }
 }
