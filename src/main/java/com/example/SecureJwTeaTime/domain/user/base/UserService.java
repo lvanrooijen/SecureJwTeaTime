@@ -1,13 +1,16 @@
 package com.example.SecureJwTeaTime.domain.user.base;
 
-import com.example.SecureJwTeaTime.domain.accountactivation.AccountActivation;
-import com.example.SecureJwTeaTime.domain.accountactivation.AccountActivationRepository;
 import com.example.SecureJwTeaTime.domain.user.base.dto.GetUserWithJwtToken;
 import com.example.SecureJwTeaTime.domain.user.base.dto.LoginUser;
 import com.example.SecureJwTeaTime.exceptions.authentication.InvalidAccountActivationCodeException;
+import com.example.SecureJwTeaTime.exceptions.authentication.InvalidRefreshTokenException;
 import com.example.SecureJwTeaTime.exceptions.user.UserNotFoundException;
+import com.example.SecureJwTeaTime.security.accountactivation.AccountActivation;
+import com.example.SecureJwTeaTime.security.accountactivation.AccountActivationRepository;
 import com.example.SecureJwTeaTime.security.jwt.JwtService;
+import com.example.SecureJwTeaTime.security.refreshtoken.RefreshToken;
 import com.example.SecureJwTeaTime.security.refreshtoken.RefreshTokenService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -70,5 +73,31 @@ public class UserService implements UserDetailsService {
 
   private User getAuthenticatedUser() {
     return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
+  public GetUserWithJwtToken refreshToken(
+      HttpServletRequest request, HttpServletResponse response) {
+    // get from user from database
+    User user = getAuthenticatedUser();
+
+    // get te refresh token from cookie
+    String providedToken = refreshTokenService.extractTokenFromCookie(request);
+
+    RefreshToken refreshToken =
+        refreshTokenService
+            .getRefreshToken(providedToken)
+            .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token not found"));
+
+    // if no match throw exception
+    if (!refreshToken.getUser().isSameUSer(user)) {
+      throw new InvalidRefreshTokenException("Refresh token does not match the user");
+    }
+
+    // if match generat new access token
+    refreshTokenService.updateRefreshToken(response, refreshToken);
+
+    // return new accesstoken
+    String accessToken = jwtService.generateAccessToken(user);
+    return GetUserWithJwtToken.to(user, accessToken);
   }
 }

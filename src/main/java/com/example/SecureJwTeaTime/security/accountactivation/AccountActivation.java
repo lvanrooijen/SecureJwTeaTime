@@ -1,4 +1,4 @@
-package com.example.SecureJwTeaTime.domain.accountactivation;
+package com.example.SecureJwTeaTime.security.accountactivation;
 
 import com.example.SecureJwTeaTime.domain.user.base.User;
 import jakarta.persistence.*;
@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class AccountActivation {
-    @Builder
-    public AccountActivation(UUID activationCode, LocalDateTime createdOn, User user) {
-        this.activationCode = activationCode;
-        this.createdOn = createdOn;
-        this.user = user;
-    }
+  @Builder
+  public AccountActivation(UUID activationCode, LocalDateTime createdOn, User user) {
+    this.activationCode = activationCode;
+    this.createdOn = createdOn;
+    this.user = user;
+  }
 
-    @Id @GeneratedValue private Long id;
+  @Id @GeneratedValue private Long id;
 
   @Column(name = "activation_code", nullable = false)
   private UUID activationCode;

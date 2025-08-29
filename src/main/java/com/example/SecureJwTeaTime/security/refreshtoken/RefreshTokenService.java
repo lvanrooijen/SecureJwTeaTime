@@ -2,10 +2,14 @@ package com.example.SecureJwTeaTime.security.refreshtoken;
 
 import com.example.SecureJwTeaTime.domain.user.base.User;
 import com.example.SecureJwTeaTime.security.jwt.JwtService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
@@ -43,6 +47,30 @@ public class RefreshTokenService {
   }
 
   /**
+   * Updates the Refresh token Value, resets the expiration date, and sets a new refresh token in
+   * the HTTP cookie.
+   *
+   * <p>The token is stored in an HTTP-only cookie, secure cookie with path "/api/v1/auth" and *
+   * SameSite=Strict
+   *
+   * @param response {@link HttpServletResponse}
+   * @param refreshToken {@link RefreshToken}
+   * @return updated {@link RefreshToken}
+   */
+  @Transactional
+  public RefreshToken updateRefreshToken(HttpServletResponse response, RefreshToken refreshToken) {
+    String updatedToken = jwtService.generateRefreshToken(refreshToken.getUser());
+    refreshToken.setToken(updatedToken);
+    refreshToken.setExpiresAt(LocalDate.now().plusDays(7));
+
+    refreshTokenRepository.save(refreshToken);
+
+    addToCookie(response, updatedToken);
+
+    return refreshToken;
+  }
+
+  /**
    * Gets of creates a {@link RefreshToken} and saves it in the database
    *
    * <p>if existing Refresh Token is expired it sets a new token value and a new expiration date.
@@ -70,6 +98,14 @@ public class RefreshTokenService {
     return refreshTokenRepository.save(refreshToken);
   }
 
+  public Optional<RefreshToken> getRefreshToken(String token) {
+    return refreshTokenRepository.findByToken(token);
+  }
+
+  public Optional<RefreshToken> getRefreshToken(User user) {
+    return refreshTokenRepository.findByUser(user);
+  }
+
   /**
    * Sets the HTTP cookie.
    *
@@ -90,6 +126,14 @@ public class RefreshTokenService {
             .build();
 
     response.addHeader("Set-Cookie", cookie.toString());
+  }
+
+  public String extractTokenFromCookie(HttpServletRequest request) {
+    return Arrays.stream(request.getCookies())
+        .filter(cookie -> "refreshToken".equals(cookie.getName()))
+        .map(Cookie::getValue)
+        .findFirst()
+        .orElse(null);
   }
 
   public Boolean isExpired(RefreshToken refreshToken) {

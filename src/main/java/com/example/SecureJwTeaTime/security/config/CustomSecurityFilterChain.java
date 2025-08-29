@@ -1,7 +1,5 @@
 package com.example.SecureJwTeaTime.security.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 import com.example.SecureJwTeaTime.security.jwt.JwtAuthFilter;
 import com.example.SecureJwTeaTime.security.jwt.UnAuthorizedEntryPoint;
 import com.example.SecureJwTeaTime.util.routes.SecurityRoutes;
@@ -12,6 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -27,13 +26,14 @@ public class CustomSecurityFilterChain {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
         .cors(cors -> cors.configurationSource(corsConfig.corsConfiguration()))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(SecurityRoutes.getOpenRoutes())
                     .permitAll()
                     .anyRequest()
-                    .authenticated())
-        .httpBasic(withDefaults());
+                    .authenticated());
 
     http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -5,6 +5,7 @@ import com.example.SecureJwTeaTime.domain.user.base.dto.LoginUser;
 import com.example.SecureJwTeaTime.domain.user.company.CompanyAccount;
 import com.example.SecureJwTeaTime.domain.user.customer.CustomerAccount;
 import com.example.SecureJwTeaTime.util.routes.AppRoutes;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,13 @@ public class UserController {
   }
 
   // refresh token
+  @PostMapping("/refresh-token")
+  public ResponseEntity<GetUserWithJwtToken> refreshToken(
+      HttpServletRequest request, HttpServletResponse response) {
+    GetUserWithJwtToken user = userService.refreshToken(request, response);
+
+    return ResponseEntity.ok(user);
+  }
 
   // logout user
 

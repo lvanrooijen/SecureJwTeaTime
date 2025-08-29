@@ -1,12 +1,12 @@
 package com.example.SecureJwTeaTime.domain.user.customer;
 
-import com.example.SecureJwTeaTime.domain.accountactivation.AccountActivation;
-import com.example.SecureJwTeaTime.domain.accountactivation.AccountActivationRepository;
 import com.example.SecureJwTeaTime.domain.user.base.UserRepository;
 import com.example.SecureJwTeaTime.domain.user.base.dto.GetUserWithJwtToken;
 import com.example.SecureJwTeaTime.domain.user.customer.dto.PostCustomer;
 import com.example.SecureJwTeaTime.events.userregistration.UserRegistrationPublisher;
 import com.example.SecureJwTeaTime.exceptions.user.UserAlreadyRegisteredException;
+import com.example.SecureJwTeaTime.security.accountactivation.AccountActivation;
+import com.example.SecureJwTeaTime.security.accountactivation.AccountActivationRepository;
 import com.example.SecureJwTeaTime.security.jwt.JwtService;
 import com.example.SecureJwTeaTime.security.refreshtoken.RefreshTokenService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomerService {
   private final UserRepository userRepository;
-  private final CustomerAccountRepository customerRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final UserRegistrationPublisher registrationPublisher;
