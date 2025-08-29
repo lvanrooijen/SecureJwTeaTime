@@ -45,7 +45,4 @@ height="21"
 
 <img
 src="https://github.com/lvanrooijen/SecureJwTeaTime/raw/main/resources/demo/demo.gif"
-alt="play button"
-width="21"
-height="21"
-/>
+alt="play button"/>
