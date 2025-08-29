@@ -1,17 +1,17 @@
 package com.example.SecureJwTeaTime.domain.user.customer;
 
 import com.example.SecureJwTeaTime.domain.user.base.dto.GetUserWithJwtToken;
+import com.example.SecureJwTeaTime.domain.user.customer.dto.GetCustomer;
+import com.example.SecureJwTeaTime.domain.user.customer.dto.PatchCustomer;
 import com.example.SecureJwTeaTime.domain.user.customer.dto.PostCustomer;
 import com.example.SecureJwTeaTime.util.routes.AppRoutes;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
@@ -35,6 +35,13 @@ public class CustomerController {
   }
 
   // patch
+  @PatchMapping("/{id}")
+  public ResponseEntity<GetCustomer> patch(
+      @PathVariable UUID id, @Valid @RequestBody PatchCustomer patch) {
+    GetCustomer customer = customerService.update(id, patch);
+
+    return ResponseEntity.ok(customer);
+  }
 
   // delete
 }

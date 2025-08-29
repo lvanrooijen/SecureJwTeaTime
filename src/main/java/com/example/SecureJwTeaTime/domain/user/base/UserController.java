@@ -55,6 +55,14 @@ public class UserController {
   }
 
   // logout user
+  @PostMapping("/logout")
+  public ResponseEntity<Void> logout(HttpServletRequest request) {
+    userService.logout(request);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  // request new password
 
   // get user by id
 

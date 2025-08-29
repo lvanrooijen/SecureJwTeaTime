@@ -94,4 +94,22 @@ public class UserService implements UserDetailsService {
 
     return GetUserWithJwtToken.to(user, accessToken);
   }
+
+  public void logout(HttpServletRequest request) {
+    User user = getAuthenticatedUser();
+    String refreshTokenValue = refreshTokenService.extractTokenFromCookie(request);
+
+    RefreshToken refreshToken =
+        refreshTokenService
+            .getRefreshToken(refreshTokenValue)
+            .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token does not exist"));
+
+    if (!refreshToken.getUser().isSameUSer(user)) {
+      throw new InvalidRefreshTokenException("User and Refresh token don't match");
+    }
+
+    refreshTokenService.revoke(refreshToken);
+
+    // TODO add access token to blacklist
+  }
 }

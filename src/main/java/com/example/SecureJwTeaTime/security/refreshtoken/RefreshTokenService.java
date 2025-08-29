@@ -1,6 +1,7 @@
 package com.example.SecureJwTeaTime.security.refreshtoken;
 
 import com.example.SecureJwTeaTime.domain.user.base.User;
+import com.example.SecureJwTeaTime.exceptions.authentication.InvalidRefreshTokenException;
 import com.example.SecureJwTeaTime.security.jwt.JwtService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,6 +60,9 @@ public class RefreshTokenService {
    */
   @Transactional
   public RefreshToken updateRefreshToken(HttpServletResponse response, RefreshToken refreshToken) {
+    if (!isValid(refreshToken)) {
+      throw new InvalidRefreshTokenException("Refresh token is invalid");
+    }
     String updatedToken = jwtService.generateRefreshToken(refreshToken.getUser());
     refreshToken.setToken(updatedToken);
     refreshToken.setExpiresAt(LocalDate.now().plusDays(7));
@@ -136,7 +140,28 @@ public class RefreshTokenService {
         .orElse(null);
   }
 
+  public void revoke(RefreshToken refreshToken) {
+    refreshToken.setRevoked(true);
+    refreshTokenRepository.save(refreshToken);
+  }
+
   public Boolean isExpired(RefreshToken refreshToken) {
     return refreshToken.getExpiresAt().isBefore(LocalDate.now());
+  }
+
+  /**
+   * Verifies if a refresh token is valid
+   *
+   * @return boolean
+   */
+  public Boolean isValid(RefreshToken refreshToken) {
+    if (refreshToken.isRevoked()) {
+      return false;
+    }
+    if (refreshToken.getExpiresAt().isBefore(LocalDate.now())) {
+      return false;
+    }
+
+    return true;
   }
 }
