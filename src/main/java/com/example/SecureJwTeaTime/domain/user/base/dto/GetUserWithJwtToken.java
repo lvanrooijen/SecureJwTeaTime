@@ -1,5 +1,6 @@
 package com.example.SecureJwTeaTime.domain.user.base.dto;
 
+import com.example.SecureJwTeaTime.domain.user.base.User;
 import java.util.UUID;
 
 /**
@@ -12,5 +13,8 @@ import java.util.UUID;
  * @param email email address of user
  * @param accessToken jwt access-token
  */
-public record GetUserWithJwtToken(
-    UUID id, String email, String username, String role, String accessToken) {}
+public record GetUserWithJwtToken(UUID id, String email, String role, String accessToken) {
+  public static GetUserWithJwtToken to(User user, String accessToken) {
+    return new GetUserWithJwtToken(user.getId(), user.getEmail(), user.getRole(), accessToken);
+  }
+}

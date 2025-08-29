@@ -128,7 +128,7 @@ public class GlobalExceptionHandler {
   public ProblemDetail handleFailedLoginAttemptException(Exception e) {
     log.warn("[FailedLoginAttemptException] {}", e.getMessage(), e);
     return ProblemDetail.forStatusAndDetail(
-        HttpStatus.BAD_REQUEST, "Invalid username and/or password");
+        HttpStatus.BAD_REQUEST, "Invalid email and/or password");
   }
 
   @ExceptionHandler(InvalidRefreshTokenException.class)

@@ -1,6 +1,6 @@
 package com.example.SecureJwTeaTime.domain.user.customer;
 
-import com.example.SecureJwTeaTime.domain.user.customer.dto.GetCustomer;
+import com.example.SecureJwTeaTime.domain.user.base.dto.GetUserWithJwtToken;
 import com.example.SecureJwTeaTime.domain.user.customer.dto.PostCustomer;
 import com.example.SecureJwTeaTime.util.routes.AppRoutes;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,9 +21,9 @@ public class CustomerController {
   private final CustomerService customerService;
 
   @PostMapping("/register")
-  public ResponseEntity<GetCustomer> register(
+  public ResponseEntity<GetUserWithJwtToken> register(
       @Valid @RequestBody PostCustomer postCustomer, HttpServletResponse response) {
-    GetCustomer customer = customerService.register(postCustomer, response);
+    GetUserWithJwtToken customer = customerService.register(postCustomer, response);
 
     URI location =
         ServletUriComponentsBuilder.fromCurrentRequest()
@@ -33,6 +33,7 @@ public class CustomerController {
 
     return ResponseEntity.created(location).body(customer);
   }
+
   // patch
 
   // delete

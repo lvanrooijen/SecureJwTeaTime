@@ -76,4 +76,8 @@ public abstract class User implements UserDetails {
   public String getAccountName() {
     return this.email;
   }
+
+  public Boolean isSameUSer(User user) {
+    return (this.id.equals(user.getId()));
+  }
 }
