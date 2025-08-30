@@ -1,4 +1,4 @@
-package com.example.SecureJwTeaTime.events.userregistration;
+package com.example.SecureJwTeaTime.events.passwordreset;
 
 import com.example.SecureJwTeaTime.email.EmailService;
 import jakarta.mail.MessagingException;
@@ -11,20 +11,26 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class UserRegistrationListener {
+public class PasswordResetListener {
   private final EmailService emailService;
 
   @EventListener
   @Async
-  public void handleUserRegistrationEvent(UserRegistrationEvent event) {
+  public void handlePasswordResetEvent(PasswordResetEvent event) {
     log.info(
         String.format(
-            "[USER REGISTRATION EVENT] email=%s userID=%s", event.getEmail(), event.getUserId()));
+            "[USER PASSWORD RESET REQUESTED] email=%s userID=%s",
+            event.getEmail(), event.getUserId()));
     try {
-      emailService.sendUserRegistrationEmail(
-          event.getEmail(), event.getName(), event.getActivationCode());
+      emailService.sendMailTemplate(
+          event.getEmail(),
+          event.getName(),
+          "Password Reset",
+          "PasswordResetRequest.html",
+          event.getActivationLink());
     } catch (MessagingException e) {
       log.warn(String.format("[MESSAGING EXCEPTION] detail: %s", e.getMessage()));
+      // TODO even nadenken wat hier te doen.
     }
   }
 }

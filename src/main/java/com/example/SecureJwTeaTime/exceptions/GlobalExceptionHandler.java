@@ -1,6 +1,8 @@
 package com.example.SecureJwTeaTime.exceptions;
 
 import com.example.SecureJwTeaTime.exceptions.authentication.InvalidRefreshTokenException;
+import com.example.SecureJwTeaTime.exceptions.authentication.PasswordResetRequestFailedException;
+import com.example.SecureJwTeaTime.exceptions.authentication.PasswordResetRequestLimitExceededException;
 import com.example.SecureJwTeaTime.exceptions.base.BaseBadRequestException;
 import com.example.SecureJwTeaTime.exceptions.base.BaseForbiddenException;
 import com.example.SecureJwTeaTime.exceptions.base.BaseNotFoundException;
@@ -145,5 +147,21 @@ public class GlobalExceptionHandler {
     String msg = "Invalid value for " + e.getMessage().substring(0, end);
 
     return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, msg);
+  }
+
+  @ExceptionHandler(PasswordResetRequestFailedException.class)
+  public ProblemDetail handlePasswordResetRequestFailedException(Exception e) {
+    log.warn("[PasswordResetRequestFailedException] {}", e.getMessage());
+
+    String msg =
+        "If this email is registered an email is to you with instructions to reset your password";
+    return ProblemDetail.forStatusAndDetail(HttpStatus.OK, msg);
+  }
+
+  @ExceptionHandler(PasswordResetRequestLimitExceededException.class)
+  public ProblemDetail handlePasswordResetRequestLimitExceededException(Exception e) {
+    log.warn("[PasswordResetRequestLimitExceededException] {}", e.getMessage());
+
+    return ProblemDetail.forStatus(HttpStatus.TOO_MANY_REQUESTS);
   }
 }

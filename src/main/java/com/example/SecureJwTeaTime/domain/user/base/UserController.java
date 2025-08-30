@@ -2,6 +2,7 @@ package com.example.SecureJwTeaTime.domain.user.base;
 
 import com.example.SecureJwTeaTime.domain.user.base.dto.GetUserWithJwtToken;
 import com.example.SecureJwTeaTime.domain.user.base.dto.LoginUser;
+import com.example.SecureJwTeaTime.domain.user.base.dto.PasswordResetRequest;
 import com.example.SecureJwTeaTime.domain.user.company.CompanyAccount;
 import com.example.SecureJwTeaTime.domain.user.customer.CustomerAccount;
 import com.example.SecureJwTeaTime.util.routes.AppRoutes;
@@ -63,6 +64,21 @@ public class UserController {
   }
 
   // request new password
+  @PostMapping("/request-password-reset")
+  public ResponseEntity<Void> requestPasswordReset(@RequestBody PasswordResetRequest body) {
+    userService.requestPasswordReset(body);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  //
+  @PostMapping("/reset-password")
+  public ResponseEntity<Void> resetPassword() {
+    // userService.resetPassword();
+    // TODO me nog!
+
+    return ResponseEntity.noContent().build();
+  }
 
   // get user by id
 
