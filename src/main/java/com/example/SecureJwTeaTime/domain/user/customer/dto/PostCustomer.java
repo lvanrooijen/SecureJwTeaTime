@@ -21,7 +21,8 @@ import org.hibernate.validator.constraints.Length;
  */
 public record PostCustomer(
     @NotBlank @Email(message = INVALID_EMAIL_MSG) String email,
-    @Password String password,
+    @NotBlank @Password String password,
+    @NotBlank @Password String confirmPassword,
     @NotBlank @Length(min = NAME_MIN, max = NAME_MAX, message = FIRST_NAME_INVALID_LENGTH_MSG)
         String firstName,
     @NotBlank @Length(min = NAME_MIN, max = NAME_MAX, message = LAST_NAME_INVALID_LENGTH_MSG)

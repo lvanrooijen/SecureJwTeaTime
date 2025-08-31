@@ -7,6 +7,7 @@ public class SecurityRoutes {
   private static final String LOGIN_USERS = AUTH + "/login";
   private static final String REGISTER_CUSTOMERS = AUTH + "/customers/register";
   private static final String PASSWORD_RESET_REQUEST = AUTH + "/request-password-reset";
+  private static final String PASSWORD_RESET = AUTH + "/reset-password/*";
   private static final String LOGOUT = AUTH + "/logout";
   private static final String REFRESH_TOKEN = AUTH + "/refresh-token";
   private static final String SWAGGER_UI = "/swagger-ui/**";
@@ -24,6 +25,7 @@ public class SecurityRoutes {
       REGISTER_CUSTOMERS,
       LOGIN_USERS,
       PASSWORD_RESET_REQUEST,
+      PASSWORD_RESET,
       SWAGGER_UI,
       SWAGGER_DOCS
     };

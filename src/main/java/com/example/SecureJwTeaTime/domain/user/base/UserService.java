@@ -2,14 +2,12 @@ package com.example.SecureJwTeaTime.domain.user.base;
 
 import com.example.SecureJwTeaTime.domain.user.base.dto.GetUserWithJwtToken;
 import com.example.SecureJwTeaTime.domain.user.base.dto.LoginUser;
+import com.example.SecureJwTeaTime.domain.user.base.dto.NewPasswordRequest;
 import com.example.SecureJwTeaTime.domain.user.base.dto.PasswordResetRequest;
 import com.example.SecureJwTeaTime.domain.user.passwordreset.PasswordReset;
 import com.example.SecureJwTeaTime.domain.user.passwordreset.PasswordResetRepository;
 import com.example.SecureJwTeaTime.events.passwordreset.PasswordResetPublisher;
-import com.example.SecureJwTeaTime.exceptions.authentication.InvalidAccountActivationCodeException;
-import com.example.SecureJwTeaTime.exceptions.authentication.InvalidRefreshTokenException;
-import com.example.SecureJwTeaTime.exceptions.authentication.PasswordResetRequestFailedException;
-import com.example.SecureJwTeaTime.exceptions.authentication.PasswordResetRequestLimitExceededException;
+import com.example.SecureJwTeaTime.exceptions.authentication.*;
 import com.example.SecureJwTeaTime.exceptions.user.UserNotFoundException;
 import com.example.SecureJwTeaTime.security.accountactivation.AccountActivation;
 import com.example.SecureJwTeaTime.security.accountactivation.AccountActivationRepository;
@@ -39,7 +37,7 @@ public class UserService implements UserDetailsService {
   private final AccountActivationRepository activationRepository;
   private final PasswordResetRepository passwordResetRepository;
   private final PasswordResetPublisher passwordResetPublisher;
-  private final String resetURL = "https://SecureJwTeaTime/auth/request-password-reset";
+  private final String resetURL = "https://SecureJwTeaTime/auth/reset-password";
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -207,5 +205,32 @@ public class UserService implements UserDetailsService {
         .lastRequestedAt(LocalDateTime.now())
         .requestCount(0)
         .build();
+  }
+
+  public GetUserWithJwtToken resetPassword(UUID resetCode, NewPasswordRequest body) {
+    if (!body.password().equals(body.confirmPassword())) {
+      throw new UserRequirementsNotMetException(
+          "Password is not the same as confirmation password");
+    }
+
+    PasswordReset reset =
+        passwordResetRepository
+            .findByResetCode(resetCode)
+            .orElseThrow(() -> new InvalidPasswordResetCodeException("reset code does not exist"));
+
+    User user =
+        userRepository
+            .findByEmailIgnoreCase(body.email())
+            .orElseThrow(() -> new UserNotFoundException("Email not registered"));
+
+    if (!reset.getUser().isSameUSer(user)) {
+      throw new InvalidPasswordResetCodeException("The reset code is not connected to the user");
+    }
+
+    user.setPassword(passwordEncoder.encode(body.password()));
+    userRepository.save(user);
+
+    String token = jwtService.generateAccessToken(user);
+    return GetUserWithJwtToken.to(user, token);
   }
 }

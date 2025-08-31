@@ -2,12 +2,14 @@ package com.example.SecureJwTeaTime.domain.user.base;
 
 import com.example.SecureJwTeaTime.domain.user.base.dto.GetUserWithJwtToken;
 import com.example.SecureJwTeaTime.domain.user.base.dto.LoginUser;
+import com.example.SecureJwTeaTime.domain.user.base.dto.NewPasswordRequest;
 import com.example.SecureJwTeaTime.domain.user.base.dto.PasswordResetRequest;
 import com.example.SecureJwTeaTime.domain.user.company.CompanyAccount;
 import com.example.SecureJwTeaTime.domain.user.customer.CustomerAccount;
 import com.example.SecureJwTeaTime.util.routes.AppRoutes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +29,7 @@ public class UserController {
 
   @PostMapping("/login")
   public ResponseEntity<GetUserWithJwtToken> login(
-      @RequestBody LoginUser requestBody, HttpServletResponse response) {
+      @Valid @RequestBody LoginUser requestBody, HttpServletResponse response) {
     GetUserWithJwtToken user = userService.login(response, requestBody);
 
     return ResponseEntity.ok(user);
@@ -65,17 +67,17 @@ public class UserController {
 
   // request new password
   @PostMapping("/request-password-reset")
-  public ResponseEntity<Void> requestPasswordReset(@RequestBody PasswordResetRequest body) {
+  public ResponseEntity<Void> requestPasswordReset(@Valid @RequestBody PasswordResetRequest body) {
     userService.requestPasswordReset(body);
 
     return ResponseEntity.noContent().build();
   }
 
-  //
-  @PostMapping("/reset-password")
-  public ResponseEntity<Void> resetPassword() {
-    // userService.resetPassword();
-    // TODO me nog!
+  // change password
+  @PostMapping("/reset-password/{activationCode}")
+  public ResponseEntity<GetUserWithJwtToken> resetPassword(
+      @Valid @RequestBody NewPasswordRequest body, @PathVariable UUID activationCode) {
+    userService.resetPassword(activationCode, body);
 
     return ResponseEntity.noContent().build();
   }

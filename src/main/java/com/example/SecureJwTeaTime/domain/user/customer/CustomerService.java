@@ -7,6 +7,7 @@ import com.example.SecureJwTeaTime.domain.user.customer.dto.GetCustomer;
 import com.example.SecureJwTeaTime.domain.user.customer.dto.PatchCustomer;
 import com.example.SecureJwTeaTime.domain.user.customer.dto.PostCustomer;
 import com.example.SecureJwTeaTime.events.userregistration.UserRegistrationPublisher;
+import com.example.SecureJwTeaTime.exceptions.authentication.UserRequirementsNotMetException;
 import com.example.SecureJwTeaTime.exceptions.user.UserAccountMisMatchException;
 import com.example.SecureJwTeaTime.exceptions.user.UserAlreadyRegisteredException;
 import com.example.SecureJwTeaTime.exceptions.user.UserNotFoundException;
@@ -36,6 +37,10 @@ public class CustomerService {
   private final RefreshTokenService refreshTokenService;
 
   public GetUserWithJwtToken register(PostCustomer dto, HttpServletResponse response) {
+    if (!dto.password().equals(dto.confirmPassword())) {
+      throw new UserRequirementsNotMetException(
+          "Password is not the same as confirmation password");
+    }
     userRepository
         .findByEmailIgnoreCase(dto.email())
         .ifPresent(

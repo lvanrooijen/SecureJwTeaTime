@@ -6,12 +6,7 @@ import com.example.SecureJwTeaTime.util.validators.password.Password;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-/**
- * DTO representing the request body of a User POST (login user) request
- *
- * @param email
- * @param password
- */
-public record LoginUser(
+public record NewPasswordRequest(
     @NotBlank @Email(message = INVALID_EMAIL_MSG) String email,
-    @NotBlank @Password String password) {}
+    @NotBlank @Password String password,
+    @NotBlank @Password String confirmPassword) {}
