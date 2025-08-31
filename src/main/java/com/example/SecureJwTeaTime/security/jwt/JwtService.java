@@ -6,6 +6,7 @@ import com.example.SecureJwTeaTime.domain.user.base.User;
 import com.example.SecureJwTeaTime.security.jwt.dto.JwtTokenDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -125,5 +126,19 @@ public class JwtService {
     }
 
     return parsedRoles.toArray(new String[0]);
+  }
+
+  /**
+   * Extracts the access token from the request, returns null if access token is not present
+   *
+   * @param request {@link HttpServletRequest}
+   * @return Access Token
+   */
+  public String extractAccessToken(HttpServletRequest request) {
+    String authHeader = request.getHeader("Authorization");
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+      return authHeader.substring(7);
+    }
+    return null;
   }
 }

@@ -21,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class CustomSecurityFilterChain {
   private final JwtAuthFilter jwtAuthFilter;
   private final CorsConfig corsConfig;
+  private final UnAuthorizedEntryPoint unAuthorizedEntryPoint;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,8 +38,7 @@ public class CustomSecurityFilterChain {
 
     http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-    http.exceptionHandling(
-        configures -> configures.authenticationEntryPoint(new UnAuthorizedEntryPoint()));
+    http.exceptionHandling(ex -> ex.authenticationEntryPoint(unAuthorizedEntryPoint));
 
     return http.build();
   }

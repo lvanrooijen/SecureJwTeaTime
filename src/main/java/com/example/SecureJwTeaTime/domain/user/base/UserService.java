@@ -1,5 +1,7 @@
 package com.example.SecureJwTeaTime.domain.user.base;
 
+import com.example.SecureJwTeaTime.domain.blacklist.accesstoken.BlacklistedAccessToken;
+import com.example.SecureJwTeaTime.domain.blacklist.accesstoken.BlacklistedAccessTokenRepository;
 import com.example.SecureJwTeaTime.domain.user.base.dto.GetUserWithJwtToken;
 import com.example.SecureJwTeaTime.domain.user.base.dto.LoginUser;
 import com.example.SecureJwTeaTime.domain.user.base.dto.NewPasswordRequest;
@@ -14,6 +16,7 @@ import com.example.SecureJwTeaTime.security.accountactivation.AccountActivationR
 import com.example.SecureJwTeaTime.security.jwt.JwtService;
 import com.example.SecureJwTeaTime.security.refreshtoken.RefreshToken;
 import com.example.SecureJwTeaTime.security.refreshtoken.RefreshTokenService;
+import com.example.SecureJwTeaTime.util.properties.SecureJwTeaTimeProperties;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
@@ -37,7 +40,8 @@ public class UserService implements UserDetailsService {
   private final AccountActivationRepository activationRepository;
   private final PasswordResetRepository passwordResetRepository;
   private final PasswordResetPublisher passwordResetPublisher;
-  private final String resetURL = "https://SecureJwTeaTime/auth/reset-password";
+  private final SecureJwTeaTimeProperties properties;
+  private final BlacklistedAccessTokenRepository blacklistedBlacklistedAccessTokenRepository;
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -119,7 +123,11 @@ public class UserService implements UserDetailsService {
 
     refreshTokenService.revoke(refreshToken);
 
-    // TODO add access token to blacklist
+    String accessToken = jwtService.extractAccessToken(request);
+    if (accessToken == null) {
+      throw new MissingAccessTokenException("Access token not present in request header");
+    }
+    blacklistedBlacklistedAccessTokenRepository.save(new BlacklistedAccessToken(accessToken));
   }
 
   /**
@@ -150,7 +158,9 @@ public class UserService implements UserDetailsService {
 
     updateResetRequest(resetRequest);
 
-    String activationLink = String.format("%s/%s", resetURL, resetRequest.getResetCode());
+    String activationLink =
+        String.format(
+            "%s/auth/reset-password/%s", properties.getDomain(), resetRequest.getResetCode());
     passwordResetPublisher.publishPasswordResetEvent(user, activationLink);
 
     passwordResetRepository.save(resetRequest);
