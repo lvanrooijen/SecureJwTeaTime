@@ -36,7 +36,6 @@ public class UnAuthorizedEntryPoint implements AuthenticationEntryPoint {
 
     ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
     problemDetail.setTitle("Unauthorized");
-    problemDetail.setDetail(authException.getMessage());
 
     objectMapper.writeValue(response.getWriter(), problemDetail);
   }
