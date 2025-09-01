@@ -6,6 +6,7 @@ import com.example.SecureJwTeaTime.domain.user.base.dto.GetUserWithJwtToken;
 import com.example.SecureJwTeaTime.domain.user.customer.dto.GetCustomer;
 import com.example.SecureJwTeaTime.domain.user.customer.dto.PatchCustomer;
 import com.example.SecureJwTeaTime.domain.user.customer.dto.PostCustomer;
+import com.example.SecureJwTeaTime.events.email.EmailEventPublisher;
 import com.example.SecureJwTeaTime.events.userregistration.UserRegistrationPublisher;
 import com.example.SecureJwTeaTime.exceptions.authentication.UserRequirementsNotMetException;
 import com.example.SecureJwTeaTime.exceptions.user.UserAccountMisMatchException;
@@ -33,6 +34,7 @@ public class CustomerService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final UserRegistrationPublisher registrationPublisher;
+  private final EmailEventPublisher emailEventPublisher;
   private final AccountActivationRepository activationRepository;
   private final RefreshTokenService refreshTokenService;
 
@@ -86,7 +88,7 @@ public class CustomerService {
     PatchCustomer.updateFields(customer, patch);
     userRepository.save(customer);
 
-    // Todo send email that account is updated
+    emailEventPublisher.publishEmailEvent(user, "Account updated", "AccountUpdated.html", null);
     return GetCustomer.to(customer);
   }
 
