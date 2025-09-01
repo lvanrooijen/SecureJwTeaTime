@@ -3,7 +3,7 @@ package com.example.SecureJwTeaTime.security.jwt;
 import static com.example.SecureJwTeaTime.util.constants.JwtConstants.AUTHORIZATION_HEADER_JWT_PREFIX;
 import static com.example.SecureJwTeaTime.util.constants.JwtConstants.AUTHORIZATION_HEADER_NAME;
 
-import com.example.SecureJwTeaTime.domain.blacklist.accesstoken.BlacklistedAccessTokenRepository;
+import com.example.SecureJwTeaTime.domain.blacklist.BlacklistedAccessTokenRepository;
 import com.example.SecureJwTeaTime.domain.user.base.User;
 import com.example.SecureJwTeaTime.domain.user.base.UserService;
 import com.example.SecureJwTeaTime.exceptions.authentication.BlacklistedAccessTokenException;

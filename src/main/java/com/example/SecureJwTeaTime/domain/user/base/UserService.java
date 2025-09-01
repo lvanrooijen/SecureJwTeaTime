@@ -1,11 +1,8 @@
 package com.example.SecureJwTeaTime.domain.user.base;
 
-import com.example.SecureJwTeaTime.domain.blacklist.accesstoken.BlacklistedAccessToken;
-import com.example.SecureJwTeaTime.domain.blacklist.accesstoken.BlacklistedAccessTokenRepository;
-import com.example.SecureJwTeaTime.domain.user.base.dto.GetUserWithJwtToken;
-import com.example.SecureJwTeaTime.domain.user.base.dto.LoginUser;
-import com.example.SecureJwTeaTime.domain.user.base.dto.NewPasswordRequest;
-import com.example.SecureJwTeaTime.domain.user.base.dto.PasswordResetRequest;
+import com.example.SecureJwTeaTime.domain.blacklist.BlacklistedAccessToken;
+import com.example.SecureJwTeaTime.domain.blacklist.BlacklistedAccessTokenRepository;
+import com.example.SecureJwTeaTime.domain.user.base.dto.*;
 import com.example.SecureJwTeaTime.domain.user.passwordreset.PasswordReset;
 import com.example.SecureJwTeaTime.domain.user.passwordreset.PasswordResetRepository;
 import com.example.SecureJwTeaTime.events.passwordreset.PasswordResetPublisher;
@@ -21,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -242,5 +240,33 @@ public class UserService implements UserDetailsService {
 
     String token = jwtService.generateAccessToken(user);
     return GetUserWithJwtToken.to(user, token);
+  }
+
+  public GetUser getById(UUID id) {
+    User user =
+        userRepository
+            .findById(id)
+            .orElseThrow(
+                () -> new UserNotFoundException(String.format("User with ID: %s not found", id)));
+
+    return GetUser.to(user);
+  }
+
+  public List<GetUser> getAll() {
+    List<User> users = userRepository.findAll();
+
+    return users.stream().map(GetUser::to).toList();
+  }
+
+  public void delete(UUID id) {
+    User user =
+        userRepository
+            .findById(id)
+            .orElseThrow(() -> new UserNotFoundException("Can not non-existent user"));
+
+    if (user.isAdmin()) {
+      throw new IllegalActionException("Can not delete administrator");
+    }
+    userRepository.deleteById(id);
   }
 }

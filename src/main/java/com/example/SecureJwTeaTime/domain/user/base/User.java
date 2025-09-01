@@ -19,12 +19,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class User implements UserDetails {
-  public User(String email, String password, Role role, LocalDate createdOn, boolean isActivated) {
+
+  public User(
+      String email,
+      String password,
+      Role role,
+      LocalDate createdOn,
+      boolean isActivated,
+      RefreshToken refreshToken) {
     this.email = email;
     this.password = password;
     this.role = role;
     this.createdOn = createdOn;
     this.isActivated = isActivated;
+    this.refreshToken = refreshToken;
   }
 
   @Id
@@ -70,7 +78,7 @@ public abstract class User implements UserDetails {
   }
 
   public Boolean isAdmin() {
-    return role.equals(Role.ADMIN);
+    return false;
   }
 
   public String getAccountName() {

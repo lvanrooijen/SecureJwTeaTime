@@ -5,7 +5,7 @@ public class SecurityRoutes {
   private static final String BASE = "/api/v1";
   private static final String AUTH = BASE + "/auth";
   private static final String LOGIN_USERS = AUTH + "/login";
-  private static final String REGISTER_CUSTOMERS = AUTH + "/customers/register";
+  private static final String REGISTER_CUSTOMERS = BASE + "/customers/register";
   private static final String PASSWORD_RESET_REQUEST = AUTH + "/request-password-reset";
   private static final String PASSWORD_RESET = AUTH + "/reset-password/*";
   private static final String LOGOUT = AUTH + "/logout";

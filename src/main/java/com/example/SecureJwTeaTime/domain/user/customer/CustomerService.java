@@ -79,11 +79,9 @@ public class CustomerService {
     User user =
         userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
 
-    if (!isCustomer(user)) {
-      throw new UserAccountMisMatchException(
-          "Can not type update, provided user account is not a customer account");
-    }
-    CustomerAccount customer = (CustomerAccount) user;
+    CustomerAccount customer =
+        convertToCustomerOrThrow(
+            user, "Can not update, provided user account is not a customer account");
 
     PatchCustomer.updateFields(customer, patch);
     userRepository.save(customer);
@@ -98,5 +96,33 @@ public class CustomerService {
 
   private boolean isCustomer(User user) {
     return user instanceof CustomerAccount;
+  }
+
+  public GetCustomer getById(UUID id) {
+    User user =
+        userRepository
+            .findById(id)
+            .orElseThrow(
+                () ->
+                    new UserNotFoundException(
+                        String.format("User with ID %s can not be found.", id)));
+
+    CustomerAccount customer = convertToCustomerOrThrow(user, "User is not a customer");
+    return GetCustomer.to(customer);
+  }
+
+  /**
+   * Converts a {@link User} type to a {@link CustomerAccount} type, or throws an exception
+   *
+   * @param user
+   * @param exceptionMessage
+   * @return user as a {@link CustomerAccount} type
+   * @throws UserAccountMisMatchException if the user is not an instance of Customer
+   */
+  private CustomerAccount convertToCustomerOrThrow(User user, String exceptionMessage) {
+    if (!isCustomer(user)) {
+      throw new UserAccountMisMatchException(exceptionMessage);
+    }
+    return (CustomerAccount) user;
   }
 }

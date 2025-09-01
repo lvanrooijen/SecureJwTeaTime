@@ -6,5 +6,5 @@ public class AppRoutes {
 
   public static final String AUTH = BASE_ROUTE + "/auth";
   public static final String USERS = BASE_ROUTE + "/users";
-  public static final String CUSTOMERS = AUTH + "/customers";
+  public static final String CUSTOMERS = BASE_ROUTE + "/customers";
 }

@@ -1,4 +1,4 @@
-package com.example.SecureJwTeaTime.domain.blacklist.accesstoken;
+package com.example.SecureJwTeaTime.domain.blacklist;
 
 import jakarta.persistence.*;
 import lombok.Getter;

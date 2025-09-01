@@ -1,9 +1,8 @@
-package com.example.SecureJwTeaTime.domain.user.company;
+package com.example.SecureJwTeaTime.domain.user.admin;
 
 import com.example.SecureJwTeaTime.domain.user.base.Role;
 import com.example.SecureJwTeaTime.domain.user.base.User;
 import com.example.SecureJwTeaTime.security.refreshtoken.RefreshToken;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
@@ -13,29 +12,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(name = "admin_accounts")
+@NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "company_accounts")
-@NoArgsConstructor
-public class CompanyAccount extends User {
+public class AdminAccount extends User {
   @Builder
-  public CompanyAccount(
+  public AdminAccount(
       String email,
       String password,
       Role role,
       LocalDate createdOn,
       boolean isActivated,
-      RefreshToken refreshToken,
-      String companyName,
-      String kvkNumber) {
+      RefreshToken refreshToken) {
     super(email, password, role, createdOn, isActivated, refreshToken);
-    this.companyName = companyName;
-    this.kvkNumber = kvkNumber;
   }
 
-  @Column(name = "company_name", nullable = false)
-  private String companyName;
-
-  @Column(name = "kvk_number", nullable = false)
-  private String kvkNumber;
+  @Override
+  public Boolean isAdmin() {
+    return true;
+  }
 }

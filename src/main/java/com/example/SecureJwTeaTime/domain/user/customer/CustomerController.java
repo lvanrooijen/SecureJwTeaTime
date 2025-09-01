@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -34,7 +35,7 @@ public class CustomerController {
     return ResponseEntity.created(location).body(customer);
   }
 
-  // patch
+  @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
   @PatchMapping("/{id}")
   public ResponseEntity<GetCustomer> patch(
       @PathVariable UUID id, @Valid @RequestBody PatchCustomer patch) {
@@ -43,5 +44,12 @@ public class CustomerController {
     return ResponseEntity.ok(customer);
   }
 
+  @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+  @GetMapping("/{id}")
+  public ResponseEntity<GetCustomer> getById(@PathVariable UUID id) {
+    GetCustomer customer = customerService.getById(id);
+
+    return ResponseEntity.ok(customer);
+  }
   // delete
 }

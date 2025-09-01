@@ -1,26 +1,18 @@
 package com.example.SecureJwTeaTime.domain.user.base;
 
-import com.example.SecureJwTeaTime.domain.user.base.dto.GetUserWithJwtToken;
-import com.example.SecureJwTeaTime.domain.user.base.dto.LoginUser;
-import com.example.SecureJwTeaTime.domain.user.base.dto.NewPasswordRequest;
-import com.example.SecureJwTeaTime.domain.user.base.dto.PasswordResetRequest;
-import com.example.SecureJwTeaTime.domain.user.company.CompanyAccount;
-import com.example.SecureJwTeaTime.domain.user.customer.CustomerAccount;
+import com.example.SecureJwTeaTime.domain.user.base.dto.*;
 import com.example.SecureJwTeaTime.util.routes.AppRoutes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * Handles HTTP requests related to {@link User}
- *
- * <p>Does not include actions related to subclasses like {@link CustomerAccount} or {@link
- * CompanyAccount}
- */
+/** Handles HTTP requests related to {@link User} */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(AppRoutes.AUTH)
@@ -35,11 +27,6 @@ public class UserController {
     return ResponseEntity.ok(user);
   }
 
-  /**
-   * Activates a user through provided code.
-   *
-   * <p>User must be authenticated to access this resource
-   */
   @PostMapping("/activate")
   public ResponseEntity<Void> activate(
       @RequestParam(required = true, name = "activationCode") UUID code) {
@@ -48,7 +35,6 @@ public class UserController {
     return ResponseEntity.noContent().build();
   }
 
-  // refresh token
   @PostMapping("/refresh-token")
   public ResponseEntity<GetUserWithJwtToken> refreshToken(
       HttpServletRequest request, HttpServletResponse response) {
@@ -57,7 +43,6 @@ public class UserController {
     return ResponseEntity.ok(user);
   }
 
-  // logout user
   @PostMapping("/logout")
   public ResponseEntity<Void> logout(HttpServletRequest request) {
     userService.logout(request);
@@ -65,7 +50,6 @@ public class UserController {
     return ResponseEntity.noContent().build();
   }
 
-  // request new password
   @PostMapping("/request-password-reset")
   public ResponseEntity<Void> requestPasswordReset(@Valid @RequestBody PasswordResetRequest body) {
     userService.requestPasswordReset(body);
@@ -73,7 +57,6 @@ public class UserController {
     return ResponseEntity.noContent().build();
   }
 
-  // change password
   @PostMapping("/reset-password/{activationCode}")
   public ResponseEntity<GetUserWithJwtToken> resetPassword(
       @Valid @RequestBody NewPasswordRequest body, @PathVariable UUID activationCode) {
@@ -82,7 +65,27 @@ public class UserController {
     return ResponseEntity.noContent().build();
   }
 
-  // get user by id
+  @GetMapping("users/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<GetUser> getById(@PathVariable UUID id) {
+    GetUser user = userService.getById(id);
 
-  // get all users
+    return ResponseEntity.ok(user);
+  }
+
+  @GetMapping("users")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<List<GetUser>> getAll() {
+    List<GetUser> users = userService.getAll();
+
+    return ResponseEntity.ok(users);
+  }
+
+  @DeleteMapping("/users/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    userService.delete(id);
+
+    return ResponseEntity.noContent().build();
+  }
 }

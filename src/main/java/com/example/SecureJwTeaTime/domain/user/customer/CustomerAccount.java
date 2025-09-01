@@ -7,7 +7,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,6 @@ import lombok.Setter;
 public class CustomerAccount extends User {
   @Builder
   public CustomerAccount(
-      UUID id,
       String email,
       String password,
       Role role,
@@ -31,22 +29,7 @@ public class CustomerAccount extends User {
       String firstName,
       String lastName,
       LocalDate birthDate) {
-    super(id, email, password, role, createdOn, isActivated, refreshToken);
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.birthDate = birthDate;
-  }
-
-  public CustomerAccount(
-      String email,
-      String password,
-      Role role,
-      LocalDate createdOn,
-      boolean isActivated,
-      String firstName,
-      String lastName,
-      LocalDate birthDate) {
-    super(email, password, role, createdOn, isActivated);
+    super(email, password, role, createdOn, isActivated, refreshToken);
     this.firstName = firstName;
     this.lastName = lastName;
     this.birthDate = birthDate;
