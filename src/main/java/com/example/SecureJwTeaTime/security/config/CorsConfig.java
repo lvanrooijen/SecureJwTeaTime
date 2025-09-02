@@ -1,6 +1,8 @@
 package com.example.SecureJwTeaTime.security.config;
 
+import com.example.SecureJwTeaTime.util.properties.SecureJwTeaTimeProperties;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,15 +12,15 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-// TODO make java docstrings
 @Configuration
+@RequiredArgsConstructor
 public class CorsConfig {
-  private final String corsClient = "http://localhost:5173";
+private final SecureJwTeaTimeProperties properties;
 
   @Bean
   CorsConfigurationSource corsConfiguration() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of(corsClient));
+    configuration.setAllowedOrigins(List.of(properties.getClient()));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(
         List.of("Authorization", "Cache-Control", "Content-Type", "Accept", "X-Requested-With"));

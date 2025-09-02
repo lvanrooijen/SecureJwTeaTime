@@ -1,10 +1,19 @@
 # SecureJwTeaTime
 
-SecureTeaTime is a simple API built with Spring Security to demonstrate the use of JWT tokens for securing endpoints.
+SecureTeaTime is a demo API built with Spring Boot and Spring Security to demonstrate the use of JWT authentication.
 This project serves as a personal Spring Security template, designed to be a starting point for building secured
 applications.
-The main goal is to provide a foundation for security configuration that I can build and improve on over time, adding
-more features as I continue learning.
+
+## This project contains the following features:
+
+- Login with access & refresh tokens
+    * An access token will be returned to the client.
+    * A refresh token will be stored in HTTP only cookie.
+    * The refresh token can be used to refresh the access token when it is expired.
+    * On logout current access token will be blacklisted
+    * During authentication the filter checks if token is black-listed, if so access is denied.
+- Account activation via e-mail
+- Password reset: request reset -> receive email -> reset password -> confirmation email
 
 ## Requirements
 
@@ -33,7 +42,7 @@ height="21"
 />
 </a> </br></br>
 
-## what runs where
+## What runs where
 
 * The API will be running on [8080](http://localhost:8080/)
 * MailDev runs on [1080](http://localhost:1080/)
@@ -46,3 +55,5 @@ height="21"
 <img
 src="https://github.com/lvanrooijen/SecureJwTeaTime/raw/main/resources/demo/demo.gif"
 alt="play button"/>
+
+

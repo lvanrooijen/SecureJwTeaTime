@@ -55,7 +55,10 @@ public class UserService implements UserDetailsService {
             .findByEmailIgnoreCase(requestBody.email())
             .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-    passwordEncoder.matches(requestBody.password(), user.getPassword());
+    if (!passwordEncoder.matches(requestBody.password(), user.getPassword())) {
+      throw new InvalidPasswordException("Invalid password");
+    }
+    ;
 
     String accessToken = jwtService.generateAccessToken(user);
 
